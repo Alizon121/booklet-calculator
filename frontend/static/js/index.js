@@ -30,7 +30,12 @@ const router = async () => {
 
     const view = new match.route.view()
 
+    // Call the AbstractView methods
     document.querySelector("#app").innerHTML = await view.getHtml()
+    
+    if (typeof view.onMounted === "function") {
+        await view.onMounted();
+    }
 
     // console.log(match.route.view());
 };
