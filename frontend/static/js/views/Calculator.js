@@ -16,8 +16,7 @@ export default class extends AbstractView{
         })
 
         const data = await response.json();
-        console.log("Calculation result:", data.result);
-        return data.result;
+        return data;
     }
 
     async onMounted() {
@@ -25,24 +24,19 @@ export default class extends AbstractView{
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
     
-            const numberBooklets = parseInt(document.getElementById("numBooklets").value, 10);
+            const numberBooklets = parseInt(document.getElementById("numberBooklets").value, 10);
             const pagesPerBooklet = parseInt(document.getElementById("pagesPerBooklet").value, 10);
-            const bookletSize = document.getElementById("bookletSize").value;
-    
-            let bookletSizeWidth, bookletSizeHeight;
-            if (bookletSize === "letter") {
-                bookletSizeWidth = 8.5;
-                bookletSizeHeight = 11;
-            } else if (bookletSize === "half") {
-                bookletSizeWidth = 5.5;
-                bookletSizeHeight = 8.5;
-            } else {
-                bookletSizeWidth = 0;
-                bookletSizeHeight = 0;
-            }
+            const bookletSizeWidth = Number(parseFloat(document.getElementById("bookletSizeWidth").value).toFixed(1));
+            const bookletSizeHeight = Number(parseFloat(document.getElementById("bookletSizeHeight").value).toFixed(1));
     
             const result = await this.calculate(numberBooklets, pagesPerBooklet, bookletSizeWidth, bookletSizeHeight);
-            document.getElementById("calcResult").innerText = `Result: ${result}`;
+            document.getElementById("calcResult").innerHTML = `
+            <div>Sheets per booklet: ${result.sheetsPerBooklet}</div>
+            <div>Total sheets: ${result.totalSheets}</div>
+            <div>Sheet width: ${result.sheetWidth}</div>
+            <div>Sheet height: ${result.sheetHeight}</div>
+            <div>Blank pages added: ${result.blankPagesAdded}</div>
+        `;
         });
     }
 
@@ -60,8 +54,8 @@ export default class extends AbstractView{
                                 
                                 <form id="calcForm">
                                     <div class="mb-3">
-                                        <label for="numBooklets" class="form-label">Number of Booklets</label>
-                                        <input type="number" class="form-control" id="numBooklets" placeholder="Enter quantity">
+                                        <label for="numberBooklets" class="form-label">Number of Booklets</label>
+                                        <input type="number" class="form-control" id="numberBooklets" placeholder="Enter quantity of booklets">
                                     </div>
     
                                     <div class="mb-3">
@@ -70,13 +64,14 @@ export default class extends AbstractView{
                                     </div>
     
                                     <div class="mb-3">
-                                        <label for="bookletSize" class="form-label">Booklet Size</label>
-                                        <select class="form-select" id="bookletSize">
-                                            <option selected disabled>Select a size</option>
-                                            <option value="letter">8.5 x 11 (Letter)</option>
-                                            <option value="half">5.5 x 8.5 (Half Letter)</option>
-                                            <option value="custom">Custom</option>
-                                        </select>
+                                        <label for="bookletSizeWidth" class="form-label">Booklet Width</label>
+                                            <input type="float" class="form-control" id="bookletSizeWidth" placeholder="Enter booklet width">
+                                    </div>
+                                    
+                                    
+                                    <div class="mb-3">
+                                        <label for="bookletSizeHeight" class="form-label">Booklet Height</label>
+                                        <input type="float" class="form-control" id="bookletSizeHeight" placeholder="Enter booklet height">
                                     </div>
     
                                     <div class="d-flex justify-content-between mt-4">
